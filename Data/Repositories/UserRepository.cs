@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BusinessEntities;
 using Common;
@@ -50,6 +51,19 @@ namespace Data.Repositories
                 query = query.WhereEquals("Email", email);
             }
             return query.ToList();
+        }
+        public IEnumerable<User> GetUserByTag(string tag)
+        {
+            if (string.IsNullOrEmpty(tag))
+            {
+                throw new ArgumentNullException(nameof(tag), "Tag must be provided.");
+            }
+
+            var query = _documentSession.Advanced.DocumentQuery<User, UsersListIndex>().ToList();
+            var filteredUsers = query.Where(user => user.Tags.Contains(tag)).ToList();
+
+            
+            return filteredUsers;
         }
 
         public void DeleteAll()
